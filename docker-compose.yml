@@ -1,0 +1,20 @@
+name: pdu_poll
+
+services:
+  influxdb:
+    image: influxdb:latest
+    networks:
+      - frontend
+      - backend
+  poller:
+    image: ubuntu:latest
+    networks:
+      - backend
+  grafana:
+    image: grafana:latest
+    networks:
+      - frontend
+
+networks:
+  frontend:
+  backend:
