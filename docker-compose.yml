@@ -6,6 +6,10 @@ services:
     networks:
       - frontend
       - backend
+    ports:
+      - 8086
+    volumes:
+      - db-data:/var/lib/influxdb2
   poller:
     image: ubuntu:latest
     networks:
@@ -17,4 +21,11 @@ services:
 
 networks:
   frontend:
+    driver: bridge
   backend:
+    driver: bridge
+
+volumes:
+  db-data:
+  grafana-data:
+  poll-data:
