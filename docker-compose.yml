@@ -1,3 +1,4 @@
+version: "2.24"
 name: pdu_poll
 
 services:
@@ -7,17 +8,22 @@ services:
       - frontend
       - backend
     ports:
-      - 8086
+      - 8086:8086
     volumes:
       - db-data:/var/lib/influxdb2
   poller:
     image: ubuntu:latest
     networks:
       - backend
+    command: bash -c "tail -f /dev/null"
   grafana:
-    image: grafana:latest
+    image: grafana/grafana-oss:latest
     networks:
       - frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
 
 networks:
   frontend:
