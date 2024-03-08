@@ -6,6 +6,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 token = "G_WAOJWZ1ymjZLUn9L1ZsrpKxYIsUYk42g7AARJgc3CdIT5GEdzLOn9gdT2MYVvIL1k46o_4QV3OQ9KgfP3txQ=="
 influxdb_address = 'pdu_poll-influxdb-1:8096'
 org='byu'
+bucket = 'pdu-data'
 url = f"http://{influxdb_address}"
 
 client = influxdb_client.InfluxDBClient(url=url,token=token,org=org)
@@ -61,11 +62,14 @@ for pdu in pdu_ips:
                     data.append({'value': response.registers[0], 'mapping': reading['mapping'], 'units': reading['units']})
         client.close()
         print(data)
+        write_api = client.write_api(write_options=SYNCHRONOUS)
         for point_value in data:
             point = (
                 Point(point_value['mapping'])
                 .tag('pdu_name', pdu['name'])
                 .field(point_value['units'], point_value['value'])
             )
+            write_api.write(bucket=bucket,org='byu',record=point)
+
     except Exception as e:
         print(f"Error:{e}")
