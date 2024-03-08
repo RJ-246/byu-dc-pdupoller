@@ -9,7 +9,7 @@ org='byu'
 bucket = 'pdu-data'
 url = f"http://{influxdb_address}"
 
-client = influxdb_client.InfluxDBClient(url=url,token=token,org=org)
+influx_client = influxdb_client.InfluxDBClient(url=url,token=token,org=org)
 
 pdu_ips = [{'ip': '10.11.82.11', 'name': '1400N_100E_B'}]#, {'ip': '10.11.82.12', 'name': '1400N 100E C'}, {'ip': '10.11.82.13', 'name': '1400N 200E B'},
 #            {'ip': '10.11.82.14', 'name': '1400N 200E C'}, {'ip': '10.11.82.15', 'name': '1400N 300E B'}, {'ip': '10.11.82.16', 'name': '1400N 300E C'},
@@ -62,7 +62,7 @@ for pdu in pdu_ips:
                     data.append({'value': response.registers[0], 'mapping': reading['mapping'], 'units': reading['units']})
         client.close()
         print(data)
-        write_api = client.write_api(write_options=SYNCHRONOUS)
+        write_api = influx_client.write_api(write_options=SYNCHRONOUS)
         for point_value in data:
             point = (
                 Point(point_value['mapping'])
