@@ -1,0 +1,2 @@
+pymodbus==3.6.5
+influxdb-client=1.41.0

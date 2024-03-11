@@ -1,5 +1,5 @@
 import pymodbus.client as ModbusClient
-import influxdb_client, os, time
+import influxdb_client, os
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 

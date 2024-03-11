@@ -3,6 +3,10 @@
 apt-get update
 apt-get install systemctl -y
 apt-get install cron -y
+apt-get install python3 python3-pip
 systemsctl enable cron
 systemctl start cron
-echo "* * * * * bash /root/" | crontab -
+curl -o /root/modbus.py https://raw.githubusercontent.com/RJ-246/byu-dc-pdupoller/main/modbus.py
+curl -o /root/requirements.txt https://raw.githubusercontent.com/RJ-246/byu-dc-pdupoller/main/requirements.txt
+pip3 install -r /root/requirements.txt
+echo "* * * * * python3 /root/modbus.py" | crontab -
