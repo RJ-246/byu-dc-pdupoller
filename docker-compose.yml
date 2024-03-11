@@ -13,12 +13,12 @@ services:
       - db-data:/var/lib/influxdb2
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_USERNAME= "admin"
-      - DOCKER_INFLUXDB_PASSWORD= "testPassword"
-      - DOCKER_INFLUXDB_INIT_ORG= "byu"
-      - DOCKER_INFLUXDB_INIT_BUCKET= "pdu-data"
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=testPassword
+      - DOCKER_INFLUXDB_INIT_ORG=byu
+      - DOCKER_INFLUXDB_INIT_BUCKET=pdu-data
       - DOCKER_INFLUXDB_INIT_RETENTION=90
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN= "G_WAOJWZ1ymjZLUn9L1ZsrpKxYIsUYk42g7AARJgc3CdIT5GEdzLOn9gdT2MYVvIL1k46o_4QV3OQ9KgfP3txQ=="
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=G_WAOJWZ1ymjZLUn9L1ZsrpKxYIsUYk42g7AARJgc3CdIT5GEdzLOn9gdT2MYVvIL1k46o_4QV3OQ9KgfP3txQ==
   poller:
     image: ubuntu:latest
     networks:
