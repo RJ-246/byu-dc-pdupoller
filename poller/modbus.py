@@ -3,7 +3,7 @@ import influxdb_client, os, time
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-token = "G_WAOJWZ1ymjZLUn9L1ZsrpKxYIsUYk42g7AARJgc3CdIT5GEdzLOn9gdT2MYVvIL1k46o_4QV3OQ9KgfP3txQ=="
+token = os.environ['INFLUX_TOKEN']#"G_WAOJWZ1ymjZLUn9L1ZsrpKxYIsUYk42g7AARJgc3CdIT5GEdzLOn9gdT2MYVvIL1k46o_4QV3OQ9KgfP3txQ=="
 influxdb_address = 'pdu_poll-influxdb-1:8086'
 org='byu'
 bucket = 'pdu-data'
