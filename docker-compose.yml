@@ -46,4 +46,4 @@ volumes:
 
 secrets:
   INFLUX_ADMIN_USERNAME:
-    environtment: "ADMIN_USERNAME"
+    environment: "ADMIN_USERNAME"
