@@ -1,1 +1,6 @@
-Placeholder
+Instructions for setup:
+
+- Pull repo
+- Run token-generate.sh to add a api token to the .env file for InfluxDB
+- Change admin username and password in .env file
+- Run docker compose up -d to start the containers
