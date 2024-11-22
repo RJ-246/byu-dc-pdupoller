@@ -13,4 +13,9 @@ chmod +x /root/modbus.py
 #export "INFLUX_TOKEN=$ADMIN_TOKEN"
 #echo "* * * * * /root/venv/bin/python3 /root/modbus.py" > /root/crontab.txt
 #crontab /root/crontab.txt
-watch -n 60 "/root/venv/bin/python3 /root/modbus.py"
+#watch -n 60 "/root/venv/bin/python3 /root/modbus.py"
+
+while true; do
+    /root/venv/bin/python3 /root/modbus.py
+    sleep 60
+done
