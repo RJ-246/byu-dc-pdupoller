@@ -5,7 +5,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 
 #Sets up influxDB info
 token = os.environ['INFLUX_TOKEN']
-influxdb_address = 'pdu-poll-influxdb-1:8086'
+influxdb_address = 'pdu_poll-influxdb-1:8086'
 org='byu'
 bucket = 'pdu-data'
 url = f"http://{influxdb_address}"

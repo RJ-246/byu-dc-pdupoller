@@ -1,4 +1,4 @@
-name: pdu-poll
+name: pdu_poll
 
 services:
   influxdb:
