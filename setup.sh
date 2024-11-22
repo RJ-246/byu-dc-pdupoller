@@ -2,7 +2,7 @@
 
 apt-get update
 #apt-get install systemd cron python3 python3-pip python3-venv -y
-apt-get install python3 python3-pip python3-venv -y
+apt-get install python3 python3-pip python3-ven watch -y
 python3 -m venv /root/venv
 #systemctl enable cron
 #systemctl start cron
