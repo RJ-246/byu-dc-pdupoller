@@ -2,11 +2,12 @@ import pymodbus.client as ModbusClient
 import influxdb_client, os
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
-import asyncio
+import datetime
 
 
 #Sets up influxDB info
-token = os.environ['INFLUX_TOKEN']
+# token = os.environ['INFLUX_TOKEN']
+token = "abc"
 influxdb_address = 'pdu_poll-influxdb-1:8086'
 org='byu'
 bucket = 'pdu-data'
@@ -77,7 +78,7 @@ pdu_registers = [{'register': 299, 'mapping': 'Total Real Power', 'units': 'watt
                  ]
 device_port = 502
 
-
+curTime = datetime.datetime.now()
 for pdu in pdu_ips:
     try:
         data = []
@@ -86,13 +87,13 @@ for pdu in pdu_ips:
 
         if connection:
             for reading in pdu_registers:
-                response=client.read_holding_registers(reading['register'],1,unit=1)
+                response=client.read_holding_registers(reading['register'])
                 if response.isError():
                     print(f"Modbus Error")
                 else:
                     data.append({'value': response.registers[0], 'mapping': reading['mapping'], 'units': reading['units']})
         client.close()
-        print(data)
+        # print(data)
         write_api = influx_client.write_api(write_options=SYNCHRONOUS)
         for point_value in data:
             point = (
@@ -100,7 +101,10 @@ for pdu in pdu_ips:
                 .tag('pdu_name', pdu['name'])
                 .field(point_value['units'], point_value['value'])
             )
-            write_api.write(bucket=bucket,org='byu',record=point)
+            # write_api.write(bucket=bucket,org='byu',record=point)
 
     except Exception as e:
         print(f"Error:{e}")
+endTime = datetime.datetime.now()
+
+print(f'{endTime-curTime} Seconds')
