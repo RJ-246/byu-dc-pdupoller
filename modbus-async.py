@@ -1,7 +1,7 @@
 import pymodbus.client as ModbusClient
 import influxdb_client, os
-from influxdb_client_async import InfluxDBClientAsync, Point, WritePrecision
-# from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client import InfluxDBClient, Point, WritePrecision
+from influxdb_client.client.write_api import SYNCHRONOUS
 import asyncio
 
 
@@ -13,7 +13,7 @@ org='byu'
 bucket = 'pdu-data'
 url = f"http://{influxdb_address}"
 
-influx_client = influxdb_client.InfluxDBClientAsync(url=url,token=token,org=org)
+influx_client = influxdb_client.InfluxDBClient(url=url,token=token,org=org)
 
 #All IPs for PDUs
 pdu_ips = [{'ip': '10.11.82.11', 'name': '1400N 100E B'}, {'ip': '10.11.82.12', 'name': '1400N 100E C'}, {'ip': '10.11.82.13', 'name': '1400N 200E B'},
@@ -94,14 +94,14 @@ async def read_pdu_data():
                         data.append({'value': response.registers[0], 'mapping': reading['mapping'], 'units': reading['units']})
             client.close()
             print(data)
-            write_api = influx_client.write_api()
+            write_api = influx_client.write_api(write_options=SYNCHRONOUS)
             for point_value in data:
                 point = (
                     Point(point_value['mapping'])
                     .tag('pdu_name', pdu['name'])
                     .field(point_value['units'], point_value['value'])
                 )
-                write_api.write(bucket=bucket,org='byu',record=point)
+                # write_api.write(bucket=bucket,org='byu',record=point)
 
         except Exception as e:
             print(f"Error:{e}")
