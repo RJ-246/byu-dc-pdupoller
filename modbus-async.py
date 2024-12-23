@@ -1,18 +1,19 @@
 import pymodbus.client as ModbusClient
 import influxdb_client, os
-from influxdb_client import InfluxDBClient, Point, WritePrecision
-from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client_async import InfluxDBClientAsync, Point, WritePrecision
+# from influxdb_client.client.write_api import SYNCHRONOUS
 import asyncio
 
 
 #Sets up influxDB info
-token = os.environ['INFLUX_TOKEN']
+# token = os.environ['INFLUX_TOKEN']
+token = "abc"
 influxdb_address = 'pdu_poll-influxdb-1:8086'
 org='byu'
 bucket = 'pdu-data'
 url = f"http://{influxdb_address}"
 
-influx_client = influxdb_client.InfluxDBClient(url=url,token=token,org=org)
+influx_client = influxdb_client.InfluxDBClientAsync(url=url,token=token,org=org)
 
 #All IPs for PDUs
 pdu_ips = [{'ip': '10.11.82.11', 'name': '1400N 100E B'}, {'ip': '10.11.82.12', 'name': '1400N 100E C'}, {'ip': '10.11.82.13', 'name': '1400N 200E B'},
@@ -77,30 +78,36 @@ pdu_registers = [{'register': 299, 'mapping': 'Total Real Power', 'units': 'watt
                  ]
 device_port = 502
 
+async def read_pdu_data():
+    for pdu in pdu_ips:
+        try:
+            data = []
+            client = ModbusClient.AsyncModbusTcpClient(pdu['ip'], port=device_port,timeout=10)
+            connection = await client.connect()
 
-for pdu in pdu_ips:
-    try:
-        data = []
-        client = ModbusClient.ModbusTcpClient(pdu['ip'], port=device_port,timeout=10)
-        connection = client.connect()
+            if connection:
+                for reading in pdu_registers:
+                    response = await client.read_holding_registers(reading['register'])
+                    if response.isError():
+                        print(f"Modbus Error")
+                    else:
+                        data.append({'value': response.registers[0], 'mapping': reading['mapping'], 'units': reading['units']})
+            client.close()
+            print(data)
+            write_api = influx_client.write_api()
+            for point_value in data:
+                point = (
+                    Point(point_value['mapping'])
+                    .tag('pdu_name', pdu['name'])
+                    .field(point_value['units'], point_value['value'])
+                )
+                write_api.write(bucket=bucket,org='byu',record=point)
 
-        if connection:
-            for reading in pdu_registers:
-                response=client.read_holding_registers(reading['register'],1,unit=1)
-                if response.isError():
-                    print(f"Modbus Error")
-                else:
-                    data.append({'value': response.registers[0], 'mapping': reading['mapping'], 'units': reading['units']})
-        client.close()
-        print(data)
-        write_api = influx_client.write_api(write_options=SYNCHRONOUS)
-        for point_value in data:
-            point = (
-                Point(point_value['mapping'])
-                .tag('pdu_name', pdu['name'])
-                .field(point_value['units'], point_value['value'])
-            )
-            write_api.write(bucket=bucket,org='byu',record=point)
+        except Exception as e:
+            print(f"Error:{e}")
 
-    except Exception as e:
-        print(f"Error:{e}")
+
+
+
+asyncio.run(read_pdu_data())
+
