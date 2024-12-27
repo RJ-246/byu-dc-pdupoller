@@ -1,23 +1,6 @@
 name: pdu_poll
 
 services:
-  influxdb:
-    image: influxdb:latest
-    networks:
-      #- frontend
-      - backend
-    ports:
-      - 8086:8086
-    volumes:
-      - db-data:/var/lib/influxdb2
-    environment:
-      - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=$ADMIN_USERNAME
-      - DOCKER_INFLUXDB_INIT_PASSWORD=$ADMIN_PASSWORD
-      - DOCKER_INFLUXDB_INIT_ORG=$INFLUX_ORG
-      - DOCKER_INFLUXDB_INIT_BUCKET=$INFLUX_BUCKET
-      - DOCKER_INFLUXDB_INIT_RETENTION=$INFLUX_RETENTION
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$ADMIN_TOKEN
   poller:
     image: ubuntu:latest
     networks:
@@ -27,8 +10,7 @@ services:
     volumes:
       - poll-data:/root
       - ./:/root/
-    environment:
-      - INFLUX_TOKEN=$ADMIN_TOKEN
+    ports:
   grafana:
     image: grafana/grafana-oss:latest
     networks:
@@ -38,6 +20,13 @@ services:
       - 3000:3000
     volumes:
       - grafana-data:/var/lib/grafana
+  prometheus:
+    image: prom/prometheus:latest
+    networks:
+      - backend
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
 
 networks:
   #frontend:
@@ -46,6 +35,6 @@ networks:
     driver: bridge
 
 volumes:
-  db-data:
   grafana-data:
   poll-data:
+  prometheus-data:

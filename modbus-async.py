@@ -111,6 +111,7 @@ device_port = 502
 
 
 async def poll_devices():
+    asyncio_tasks = []
     for device in devices:
         asyncio_tasks.append(device.create_read_task())
     return await asyncio.wait(asyncio_tasks)

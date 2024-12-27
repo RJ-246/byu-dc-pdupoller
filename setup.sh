@@ -15,7 +15,7 @@ chmod +x /root/modbus.py
 #crontab /root/crontab.txt
 #watch -n 60 "/root/venv/bin/python3 /root/modbus.py"
 
-while true; do
-    /root/venv/bin/python3 /root/modbus.py
-    sleep 60
-done
+#while true; do
+/root/venv/bin/python3 /root/modbus-async.py
+#    sleep 60
+#done
