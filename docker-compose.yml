@@ -10,7 +10,7 @@ services:
     volumes:
       - poll-data:/root
       - ./:/root/
-    ports:
+
   grafana:
     image: grafana/grafana-oss:latest
     networks:
