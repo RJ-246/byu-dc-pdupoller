@@ -7,6 +7,8 @@ import time
 ## prometheus setup
 disable_created_metrics()
 
+gauges = {}
+
 
 
 class Device():
@@ -15,8 +17,6 @@ class Device():
         self.ip = ip
         self.values_to_poll = values_to_poll
         self.poll_type = poll_type
-        self.gauges = []
-        for register in values_to_poll:
 
 
 
@@ -24,26 +24,23 @@ class Device():
     async def pdu_read(self):
         try:
             data = []
-            client = ModbusClient.AsyncModbusTcpClient(pdu['ip'], port=device_port,timeout=10)
+            client = ModbusClient.AsyncModbusTcpClient(self.ip, port=device_port,timeout=10)
             connection = await client.connect()
-
             if connection:
                 for reading in self.values_to_poll:
                     response = await client.read_holding_registers(reading['register'])
                     if response.isError():
                         print(f"Modbus Error")
                     else:
-                        gauge = Gauge(reading.metric_name, "")
-                        gauge.labels(device_name=reading.name)
-                        gauge.set(response)
-                        self.gauges.append(gauge)
+                        print(f'value: {response.registers[0]}')
+                        gauge_key = f'{reading['metric_name']}'
+                        gauges[gauge_key].labels(device_name=self.name).set(response.registers[0])
             client.close()
-            print(data)
         except Exception as e:
             print(f"Error:{e}")
 
     
-    async def create_read_task(self):
+    def create_read_task(self):
         task = asyncio.create_task(self.pdu_read())
         return task
 
@@ -64,9 +61,9 @@ pdu_ips = [{'ip': '10.11.82.11', 'name': '1400N_100E_B'}, {'ip': '10.11.82.12', 
 
 #The registers to read data from (each pdu has a CSV you can download with the register metric_names)
 pdu_registers = [{'register': 299, 'metric_name': 'pdu_real_power_watts_total', 'units': 'watts'},
-                 {'register': 300, 'metric_name': 'pdu_apparent_power_volt-amps_total', 'units': 'volt-amps'},
+                 {'register': 300, 'metric_name': 'pdu_apparent_power_voltamps_total', 'units': 'volt-amps'},
                  {'register': 301, 'metric_name': 'pdu_power_factor_total', 'units': '%'},
-                 {'register': 302, 'metric_name': 'pdu_energy_kilowatt-hours_total', 'units': 'kilowatt-hours'},
+                 {'register': 302, 'metric_name': 'pdu_energy_kilowatthours_total', 'units': 'kilowatt-hours'},
 
                 #  {'register': 400, 'metric_name': 'Phase 1 Voltage', 'units': 'volts'},
                 #  {'register': 401, 'metric_name': 'Phase 2 Voltage', 'units': 'volts'},
@@ -114,20 +111,27 @@ device_port = 502
 
 
 async def poll_devices():
-    devices = []
-    asyncio_tasks = []
-    for pdu in pdu_ips:
-        devices.append(Device(ip=pdu.ip, name=pdu.name, values_to_poll=pdu_registers, poll_type="modbus"))
     for device in devices:
         asyncio_tasks.append(device.create_read_task())
-    _ = await asyncio.wait(asyncio_tasks)
+    return await asyncio.wait(asyncio_tasks)
+
 
 
 
 
 start_http_server(8000)
 
+
+devices = []
+asyncio_tasks = []
+for pdu in pdu_ips:
+    devices.append(Device(ip=pdu['ip'], name=pdu['name'], values_to_poll=pdu_registers, poll_type="modbus"))
+for reading in pdu_registers:
+    gauge_key = f'{reading['metric_name']}'
+    if gauge_key not in gauges:
+        gauges[gauge_key] = Gauge(reading['metric_name'], "", ["device_name"])
+
 while True:
-    poll_devices()
+    asyncio.run(poll_devices())
     time.sleep(60)
 
