@@ -1,24 +1,11 @@
 import pymodbus.client as ModbusClient
-import influxdb_client, os
-from influxdb_client import InfluxDBClient, Point, WritePrecision
-from influxdb_client.client.write_api import SYNCHRONOUS
 import asyncio
 import datetime
-from prometheus_client import start_http_server, disable_created_metrics
+from prometheus_client import start_http_server, disable_created_metrics, Gauge
+import time
 
 ## prometheus setup
 disable_created_metrics()
-
-
-#Sets up influxDB info
-# token = os.environ['INFLUX_TOKEN']
-token = "abc"
-influxdb_address = 'pdu_poll-influxdb-1:8086'
-org='byu'
-bucket = 'pdu-data'
-url = f"http://{influxdb_address}"
-
-influx_client = influxdb_client.InfluxDBClient(url=url,token=token,org=org)
 
 
 
@@ -28,9 +15,39 @@ class Device():
         self.ip = ip
         self.values_to_poll = values_to_poll
         self.poll_type = poll_type
+        self.gauges = []
+        for register in values_to_poll:
 
+
+
+
+    async def pdu_read(self):
+        try:
+            data = []
+            client = ModbusClient.AsyncModbusTcpClient(pdu['ip'], port=device_port,timeout=10)
+            connection = await client.connect()
+
+            if connection:
+                for reading in self.values_to_poll:
+                    response = await client.read_holding_registers(reading['register'])
+                    if response.isError():
+                        print(f"Modbus Error")
+                    else:
+                        gauge = Gauge(reading.metric_name, "")
+                        gauge.labels(device_name=reading.name)
+                        gauge.set(response)
+                        self.gauges.append(gauge)
+            client.close()
+            print(data)
+        except Exception as e:
+            print(f"Error:{e}")
+
+    
     async def create_read_task(self):
-        task = asyncio.create_task(pdu_read(self))
+        task = asyncio.create_task(self.pdu_read())
+        return task
+
+
 
 #All IPs for PDUs
 pdu_ips = [{'ip': '10.11.82.11', 'name': '1400N_100E_B'}, {'ip': '10.11.82.12', 'name': '1400N_100E_C'}, {'ip': '10.11.82.13', 'name': '1400N_200E_B'},
@@ -96,54 +113,21 @@ pdu_registers = [{'register': 299, 'metric_name': 'pdu_real_power_watts_total', 
 device_port = 502
 
 
-
-
-async def pdu_read(pdu):
-    try:
-        data = []
-        client = ModbusClient.AsyncModbusTcpClient(pdu['ip'], port=device_port,timeout=10)
-        connection = await client.connect()
-
-        if connection:
-            for reading in pdu_registers:
-                response = await client.read_holding_registers(reading['register'])
-                if response.isError():
-                    print(f"Modbus Error")
-                else:
-                    data.append({'value': response.registers[0], 'metric_name': reading['metric_name'], 'units': reading['units']})
-        client.close()
-        print(data)
-        write_api = influx_client.write_api(write_options=SYNCHRONOUS)
-        for point_value in data:
-            point = (
-                Point(point_value['metric_name'])
-                .tag('pdu_name', pdu['name'])
-                .field(point_value['units'], point_value['value'])
-            )
-            # write_api.write(bucket=bucket,org='byu',record=point)
-
-    except Exception as e:
-        print(f"Error:{e}")
-
-async def read_pdu_data():
-    tasks = [asyncio.create_task(pdu_read(pdu)) for pdu in pdu_ips]
-    # for pdu in pdu_ips:
-        # tasks = tasks.append(asyncio.create_task(pdu_read(pdu)))
-    _ = await asyncio.wait(tasks)
+async def poll_devices():
+    devices = []
+    asyncio_tasks = []
+    for pdu in pdu_ips:
+        devices.append(Device(ip=pdu.ip, name=pdu.name, values_to_poll=pdu_registers, poll_type="modbus"))
+    for device in devices:
+        asyncio_tasks.append(device.create_read_task())
+    _ = await asyncio.wait(asyncio_tasks)
 
 
 
-curTime = datetime.datetime.now()
-asyncio.run(read_pdu_data())
-endTime = datetime.datetime.now()
 
-devices = []
-asyncio_tasks = []
-for pdu in pdu_ips:
-    devices.append(Device(ip=pdu.ip, name=pdu.name, values_to_poll=pdu_registers, poll_type="modbus"))
-for device in devices:
-    asyncio_tasks.append(device.create_read_task())
+start_http_server(8000)
 
-
-print(f'{endTime-curTime} Seconds')
+while True:
+    poll_devices()
+    time.sleep(60)
 

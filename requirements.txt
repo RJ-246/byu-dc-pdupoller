@@ -1,5 +1,6 @@
 certifi==2024.12.14
 influxdb-client==1.48.0
+prometheus_client==0.21.1
 pyasn1==0.6.1
 pymodbus==3.8.2
 pysnmp==7.1.15
