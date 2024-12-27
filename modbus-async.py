@@ -23,7 +23,6 @@ class Device():
 
     async def pdu_read(self):
         try:
-            data = []
             client = ModbusClient.AsyncModbusTcpClient(self.ip, port=device_port,timeout=10)
             connection = await client.connect()
             if connection:
@@ -51,7 +50,7 @@ pdu_ips = [{'ip': '10.11.82.11', 'name': '1400N_100E_B'}, {'ip': '10.11.82.12', 
            {'ip': '10.11.82.14', 'name': '1400N_200E_C'}, {'ip': '10.11.82.15', 'name': '1400N_300E_B'}, {'ip': '10.11.82.16', 'name': '1400N_300E_C'},
            {'ip': '10.11.82.17', 'name': '1400N_400E_B'}, {'ip': '10.11.82.18', 'name': '1400N_400E_C'}, {'ip': '10.11.82.19', 'name': '1400N_500E_B'},
            {'ip': '10.11.82.20', 'name': '1400N_500E_C'}, {'ip': '10.11.82.21', 'name': '1400N_600E_B'}, {'ip': '10.11.82.22', 'name': '1400N_600E_C'},
-           {'ip': '10.11.82.23', 'name': '1400N_700E_B'},{'ip': '10.11.82.24', 'name': '1400N_700E_C'},
+           {'ip': '10.11.82.23', 'name': '1400N_700E_A'},{'ip': '10.11.82.24', 'name': '1400N_700E_B'},
            
            {'ip': '10.11.82.25', 'name': '900N_100E_A'}, {'ip': '10.11.82.26', 'name': '900N_100E_B'}, {'ip':'10.11.82.27', 'name': '900N_200E_A'},
            {'ip': '10.11.82.28' ,'name': '900N_200E_B'}, {'ip': '10.11.82.29','name': '900N_300E_A'}, {'ip': '10.11.82.30','name': '900N_300E_B'},
