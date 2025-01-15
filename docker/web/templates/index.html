@@ -1,4 +1,4 @@
-{% if device_list %}
+{% extends 'base.html' %} {% block content %} {% if device_list %}
 <ul>
   {% for device in device_list %}
   <li>{{ device }}</li>
@@ -7,4 +7,4 @@
 
 {%else%}
 <p>No devices</p>
-{%endif%}
+{%endif%} {% endblock %}
