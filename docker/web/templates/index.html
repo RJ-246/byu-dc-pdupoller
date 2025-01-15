@@ -1,0 +1,10 @@
+{% if device_list %}
+<ul>
+  {% for device in device_list %}
+  <li>{{ device }}</li>
+  {%endfor%}
+</ul>
+
+{%else%}
+<p>No devices</p>
+{%endif%}
