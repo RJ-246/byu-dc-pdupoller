@@ -27,7 +27,7 @@ class Device():
             connection = await client.connect()
             if connection:
                 for reading in self.values_to_poll:
-                    response = await client.read_holding_registers(reading['register'])
+                    response = await client.read_holding_registers(reading['register'], count=reading["count"])
                     if response.isError():
                         print(f"Modbus Error")
                     else:
@@ -64,10 +64,10 @@ pdu_ips = [{'ip': '10.11.82.11', 'name': '1400N_100E_B'}, {'ip': '10.11.82.12', 
            ]
 
 #The registers to read data from (each pdu has a CSV you can download with the register metric_names)
-pdu_registers = [{'register': 299, 'metric_name': 'pdu_real_power_watts_total', 'units': 'watts'},
-                 {'register': 300, 'metric_name': 'pdu_apparent_power_voltamps_total', 'units': 'volt-amps'},
-                 {'register': 301, 'metric_name': 'pdu_power_factor_total', 'units': '%'},
-                 {'register': 302, 'metric_name': 'pdu_energy_kilowatthours_total', 'units': 'kilowatt-hours'},
+pdu_registers = [{'register': 299, 'metric_name': 'pdu_real_power_watts_total', 'units': 'watts', 'count': 1},
+                 {'register': 300, 'metric_name': 'pdu_apparent_power_voltamps_total', 'units': 'volt-amps', 'count': 1},
+                 {'register': 301, 'metric_name': 'pdu_power_factor_total', 'units': '%', 'count': 1},
+                 {'register': 302, 'metric_name': 'pdu_energy_kilowatthours_total', 'units': 'kilowatt-hours', 'count': 1},
 
                 #  {'register': 400, 'metric_name': 'Phase 1 Voltage', 'units': 'volts'},
                 #  {'register': 401, 'metric_name': 'Phase 2 Voltage', 'units': 'volts'},
