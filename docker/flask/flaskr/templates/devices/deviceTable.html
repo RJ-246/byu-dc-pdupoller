@@ -12,14 +12,15 @@
   <tbody>
     {% for item in context.device_list %}
     <tr>
-      <td>{{item._id}}</td>
-      <td>{{item.testInsert}}</td>
+      {% for column in item %}
+      <td>{{item[column]}}</td>
+      {% endfor %}
     </tr>
     {%endfor%}
   </tbody>
 </table>
 
-<a class="button" href="{{url_for('devices.addDevice')}}">Add Device</a>
+<a class="button" href="{{url_for('devices.addDevice_get')}}">Add Device</a>
 
 <p>{{context}}</p>
 {%endblock%} {%block scripts%}

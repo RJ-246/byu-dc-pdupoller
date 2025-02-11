@@ -1,5 +1,49 @@
 {% extends 'base.html'%}
 <!--  -->
+
+<!-- Input Field Blueprint
+   <div class="field">
+    <label class="label">Label Here</label>
+    <div class="control">
+      <input class="input" />
+    </div>
+  </div> 
+  -->
 {% block content %}
-<p>Add Device</p>
+<form action="{{url_for('devices.addDevice_post')}}" method="post">
+  <div class="field">
+    <label class="label">Device Name</label>
+    <div class="control">
+      <input class="input" type="text" name="device_name" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">Device IP Address</label>
+    <div class="control">
+      <input class="input" type="text" name="device_ip" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">Device Port</label>
+    <div class="control">
+      <input class="input" type="number" name="device_port" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">Poll Type</label>
+    <div class="control">
+      <div class="select">
+        <select name="poll_type">
+          <option value="snmp">SNMP</option>
+          <option value="modbus">Modbus</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="button is-success" type="submit">Add Device</button>
+</form>
 {%endblock%}

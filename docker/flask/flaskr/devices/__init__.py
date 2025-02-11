@@ -32,6 +32,25 @@ def deviceTable():
     print(context)
     return render_template('devices/deviceTable.html', context=context)
 
-@bp.route('/add')
-def addDevice():
+@bp.get('/add')
+def addDevice_get():
     return render_template('devices/addDevice.html')
+
+@bp.post('/add')
+def addDevice_post():
+    record = {
+    "device_name": request.form['device_name'],
+    "device_ip": request.form['device_ip'],
+    "device_port": request.form['device_port'],
+    "device_poll_type": request.form['poll_type'],
+    "device_registers": []
+    }
+    record_id = ""
+    
+    if record["device_poll_type"] == "snmp":
+        record_id = snmpCollection.insert_one(record)
+    elif record["device_poll_type"] == "modbus":
+        record_id = modbusCollection.insert_one(record)
+    print(record_id)
+    
+    return redirect(url_for('devices.deviceTable'))
