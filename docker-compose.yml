@@ -34,6 +34,9 @@ services:
     volumes:
       - mongodb-data:/data/db
 
+  # flask:
+  #   image:
+
 networks:
   #frontend:
   #driver: bridge

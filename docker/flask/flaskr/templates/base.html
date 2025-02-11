@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+  <title>{% block title %}{% endblock %} - Flaskr</title>
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" /> -->
+  {% block links %}{% endblock %}
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
+  />
+</head>
+<body>
+  <nav class="navbar is-info">
+    <div class="navbar-brand">
+      <p>Device Monitor</p>
+    </div>
+    </div>
+  </nav>
+  <section class="content">
+    <header>{% block header %}{% endblock %}</header>
+    {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %} {% block content %}{% endblock %}
+  </section>
+
+  {% block scripts %} {% endblock %}
+</body>

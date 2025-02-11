@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+<!--  -->
+{%block content%}
+<table class="table is-bordered is-striped is-hoverable" id="deviceTable">
+  <thead>
+    <tr>
+      {% for key in context.device_list[0] %}
+      <td>{{key}}</td>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in context.device_list %}
+    <tr>
+      <td>{{item._id}}</td>
+      <td>{{item.testInsert}}</td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+
+<a class="button" href="{{url_for('devices.addDevice')}}">Add Device</a>
+
+<p>{{context}}</p>
+{%endblock%} {%block scripts%}
+<script
+  type="text/javascript"
+  src="{{ url_for('devices.static', filename='js/table.js')}}"
+></script>
+{%endblock%}
