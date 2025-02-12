@@ -3,36 +3,45 @@ import asyncio
 import datetime
 from prometheus_client import start_http_server, disable_created_metrics, Gauge
 import time
-
+import requests
+import logging
 ## prometheus setup
 disable_created_metrics()
 
 gauges = {}
 
 
+#logging
+logging.basicConfig(filename="output.log",
+                    format='%(message)s',
+                    filemode='w')
+logger=logging.getLogger()
+logger.setLevel(logging.INFO)
+
 
 class Device():
-    def __init__(self, name, ip, values_to_poll, poll_type):
+    def __init__(self, name, ip,values_to_poll, port, poll_type, power_limit):
         self.name = name
         self.ip = ip
+        self.port = port
         self.values_to_poll = values_to_poll
         self.poll_type = poll_type
-
-
-
+        self.port = 502
+        self.power_limit = power_limit
+        self.registers = self.registers
 
     async def pdu_read(self):
         try:
-            client = ModbusClient.AsyncModbusTcpClient(self.ip, port=device_port,timeout=10)
+            client = ModbusClient.AsyncModbusTcpClient(self.ip, port=self.port,timeout=10)
             connection = await client.connect()
             if connection:
-                for reading in self.values_to_poll:
-                    response = await client.read_holding_registers(reading['register'], count=reading["count"])
+                for register in self.registers:
+                    response = await client.read_holding_registers(register['register'], count=register["read_count"])
                     if response.isError():
                         print(f"Modbus Error")
                     else:
                         print(f'value: {response.registers[0]}')
-                        gauge_key = f'{reading['metric_name']}'
+                        gauge_key = f'{register['metric_name']}'
                         gauges[gauge_key].labels(device_name=self.name).set(response.registers[0])
             client.close()
         except Exception as e:
@@ -111,7 +120,6 @@ pdu_registers = [{'register': 299, 'metric_name': 'pdu_real_power_watts_total', 
                 #  {'register': 474, 'metric_name': 'Phase 5 Balance', 'units': '%'},
                 #  {'register': 475, 'metric_name': 'Phase 6 Balance', 'units': '%'},
                  ]
-device_port = 502
 
 
 async def poll_devices():
@@ -121,6 +129,11 @@ async def poll_devices():
     return await asyncio.wait(asyncio_tasks)
 
 
+def get_devices():
+    mongo_address = 'pdu_poll-mongodb-1:27017'
+    response = requests.get(f'http://{mongo_address}/devices/get_modbus_devices')
+    logger.info(f'{response}')
+    print(response)
 
 
 
@@ -129,6 +142,10 @@ start_http_server(8000)
 
 devices = []
 asyncio_tasks = []
+
+#Get device list from mongoDB
+
+
 for pdu in pdu_ips:
     devices.append(Device(ip=pdu['ip'], name=pdu['name'], values_to_poll=pdu_registers, poll_type="modbus"))
 for reading in pdu_registers:
@@ -138,5 +155,6 @@ for reading in pdu_registers:
 
 while True:
     asyncio.run(poll_devices())
+    get_devices()
     time.sleep(60)
 

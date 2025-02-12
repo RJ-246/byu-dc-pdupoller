@@ -20,10 +20,13 @@
   </tbody>
 </table>
 
-<a class="button" href="{{url_for('devices.addDevice_get')}}">Add Device</a>
+<a class="button is-info" href="{{url_for('devices.addDevice_get')}}"
+  >Add Device</a
+>
 
-<p>{{context}}</p>
-{%endblock%} {%block scripts%}
+{%endblock%}
+<!--  -->
+{%block scripts%}
 <script
   type="text/javascript"
   src="{{ url_for('devices.static', filename='js/table.js')}}"
