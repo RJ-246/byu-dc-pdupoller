@@ -6,9 +6,7 @@ import time
 import requests
 import logging
 ## prometheus setup
-disable_created_metrics()
 
-gauges = {}
 
 
 #logging
@@ -130,20 +128,20 @@ async def poll_devices():
 
 
 def get_devices():
-    mongo_address = 'pdu_poll-mongodb-1:27017'
-    response = requests.get(f'http://{mongo_address}/devices/get_modbus_devices')
+    flask_address = ""
+    #mongo_address = 'pdu_poll-mongodb-1:27017'
+    response = requests.get(f'http://{flask_address}/devices/get_modbus_devices')
     logger.info(f'{response}')
     print(response)
 
-
-
+#prometheus setup
+disable_created_metrics()
+gauges = {}
 start_http_server(8000)
 
 
 devices = []
 asyncio_tasks = []
-
-#Get device list from mongoDB
 
 
 for pdu in pdu_ips:
