@@ -10,7 +10,7 @@ bp = Blueprint('devices', __name__, static_folder='static', url_prefix="/devices
 
 
 # Database connection
-connectionString = "mongodb://root:strongPassword@127.0.0.1:27017"
+connectionString = "mongodb://root:strongPassword@mongodb:27017"
 
 mongoClient = MongoClient(connectionString)
 

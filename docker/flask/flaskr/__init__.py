@@ -20,7 +20,9 @@ def create_app(test_config=None):
 
 
 
-
+    @app.route('/health')
+    def health_check():
+        return {'status': 'healthy'}, 200
 
 
     from .index import bp as index_bp

@@ -2,6 +2,9 @@ name: pdu_poll
 
 services:
   poller:
+    depends_on:
+      flask:
+        condition: service_healthy
     build: ./docker/poller
     networks:
       - backend
@@ -33,9 +36,30 @@ services:
       - 27017:27017
     volumes:
       - mongodb-data:/data/db
+    networks:
+      - backend
+    healthcheck:
+      test: 'echo ''db.runCommand("ping").ok'' | mongosh --quiet'
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
-  # flask:
-  #   image:
+  flask:
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    build: ./docker/flask
+    networks:
+      - backend
+    ports:
+      - 8000:8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
 networks:
   #frontend:

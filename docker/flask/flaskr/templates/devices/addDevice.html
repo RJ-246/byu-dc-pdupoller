@@ -34,7 +34,7 @@
       <div class="field">
         <label class="label">Device Port</label>
         <div class="control">
-          <input class="input" type="number" name="device_port" />
+          <input class="input" type="number" name="device_port" value="502" />
         </div>
       </div>
 
@@ -54,7 +54,12 @@
         <label class="label">Device Power Limit (Watts)</label>
         <div class="control">
           <div class="select">
-            <input type="number" class="input" name="power_limit" />
+            <input
+              type="number"
+              class="input"
+              name="power_limit"
+              default="6240"
+            />
           </div>
         </div>
       </div>
@@ -93,14 +98,14 @@
     <div class="field">
       <label class="label">Register Sequential Read Count</label>
       <div class="control">
-        <input class="input" type="number" min="1" name="register[][read_count]" />
+        <input class="input" type="number" min="1" name="register[][read_count]" value="1" />
       </div>
     </div>
 
     <div class="field">
       <label class="label">Slave ID</label>
       <div class="control">
-        <input class="input" type="number" name="register[][slave]" />
+        <input class="input" type="number" name="register[][slave]" value="1" />
       </div>
     </div>
 
