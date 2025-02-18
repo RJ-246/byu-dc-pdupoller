@@ -7,6 +7,7 @@
       {% for key in context.device_list[0] %}
       <td>{{key}}</td>
       {% endfor %}
+      <td>Edit Device</td>
     </tr>
   </thead>
   <tbody>
@@ -15,6 +16,13 @@
       {% for column in item %}
       <td>{{item[column]}}</td>
       {% endfor %}
+      <td>
+        <a
+          class="button is-warning"
+          href="{{url_for('devices.editDevice_get',device_type=item.device_poll_type, device_id=item._id )}}"
+          >Edit Device</a
+        >
+      </td>
     </tr>
     {%endfor%}
   </tbody>

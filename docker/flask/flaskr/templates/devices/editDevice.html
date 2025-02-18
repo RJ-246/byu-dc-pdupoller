@@ -1,0 +1,233 @@
+{% extends 'base.html'%}
+<!--  -->
+
+<!-- Input Field Blueprint
+   <div class="field">
+    <label class="label">Label Here</label>
+    <div class="control">
+      <input class="input" />
+    </div>
+  </div> 
+  -->
+{% block content %}
+<div class="columns is-centered">
+  <div class="column is-two-thirds">
+    <form
+      action="{{url_for('devices.editDevice_post')}}"
+      method="post"
+      class="box"
+    >
+      <input type="hidden" value="{{context._id}}" name="device_id" />
+      <div class="field">
+        <label class="label">Device Name</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            name="device_name"
+            value="{{context.device_name}}"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Device IP Address</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            name="device_ip"
+            value="{{context.device_ip}}"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Device Port</label>
+        <div class="control">
+          <input
+            class="input"
+            type="number"
+            name="device_port"
+            value="{{context.device_port}}"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Poll Type</label>
+        <div class="control">
+          <div class="select">
+            <select name="poll_type">
+              <option value="modbus" selected>Modbus</option>
+              <option value="snmp">SNMP</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Device Power Limit (Watts)</label>
+        <div class="control">
+          <div class="select">
+            <input
+              type="number"
+              class="input"
+              name="power_limit"
+              value="{{context.device_power_limit}}"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div id="registers">
+        {% for register in context.device_registers %}
+        <div class="box">
+          <div class="field">
+            <label class="label">Register</label>
+            <div class="control">
+              <input
+                class="input"
+                type="number"
+                min="0"
+                max="65535"
+                name="register[][register]"
+                value="{{register.register}}"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Register Sequential Read Count</label>
+            <div class="control">
+              <input
+                class="input"
+                type="number"
+                min="1"
+                name="register[][read_count]"
+                value="{{register.read_count}}"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Slave ID</label>
+            <div class="control">
+              <input
+                class="input"
+                type="number"
+                name="register[][slave]"
+                value="{{register.slave}}"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Metric Name</label>
+            <div class="control">
+              <input
+                class="input"
+                type="text"
+                name="register[][metric_name]"
+                value="{{register.metric_name}}"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Metric Unit</label>
+            <div class="control">
+              <input
+                class="input"
+                type="text"
+                name="register[][metric_unit]"
+                value="{{register.metric_unit}}"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Metric Grouping</label>
+            <div class="control">
+              <input
+                class="input"
+                type="text"
+                name="register[][grouping]"
+                value="{{register.grouping}}"
+              />
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <button
+        class="button is-warning"
+        type="button"
+        onclick="addRegisterForm()"
+      >
+        Add Register
+      </button>
+      <br />
+      <br />
+      <button class="button is-success" type="submit">Save Device</button>
+    </form>
+  </div>
+</div>
+
+<script type="text/javascript">
+  let registerCount = 0;
+  function addRegisterForm() {
+    registerCount += 1;
+    let registersDiv = document.getElementById("registers");
+    registersDiv.insertAdjacentHTML(
+      "beforeend",
+      `
+      <div class="box">
+        <div class="field">
+        <label class="label">Register</label>
+        <div class="control">
+          <input class="input" type="number" min="0" max="65535" name="register[][register]" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Register Sequential Read Count</label>
+        <div class="control">
+          <input class="input" type="number" min="1" name="register[][read_count]" value="1" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Slave ID</label>
+        <div class="control">
+          <input class="input" type="number" name="register[][slave]" value="1" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Metric Name</label>
+        <div class="control">
+          <input class="input" type="text" name="register[][metric_name]" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Metric Unit</label>
+        <div class="control">
+          <input class="input" type="text" name="register[][metric_unit]" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Metric Grouping</label>
+        <div class="control">
+          <input class="input" type="text" name="register[][grouping]" value=""/>
+        </div>
+      </div>
+    </div
+      `
+    );
+  }
+</script>
+{%endblock%}

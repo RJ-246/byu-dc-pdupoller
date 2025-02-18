@@ -38,7 +38,7 @@ class Device():
                     else:
                         logger.info(f'value: {response.registers[0]} metric: {register['metric_name']}')
                         gauge_key = f'{register['metric_name']}'
-                        gauges[gauge_key].labels(device_name=self.name).set(response.registers[0])
+                        gauges[gauge_key].labels(device_name=self.name, grouping=register['grouping']).set(response.registers[0])
             client.close()
         except Exception as e:
             print(f"Error:{e}")
@@ -69,7 +69,7 @@ def get_devices():
                 try:
                     gauge_key = f'{register["metric_name"]}'
                     if gauge_key not in gauges:
-                        gauges[gauge_key] = Gauge(register['metric_name'], "", labelnames=(['device_name']))
+                        gauges[gauge_key] = Gauge(register['metric_name'], "", labelnames=(['device_name', 'grouping']))
                 except:
                     logger.error(f"error creating label {register['metric_name']}")
                 
