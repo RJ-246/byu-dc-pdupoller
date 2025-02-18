@@ -64,6 +64,7 @@ def addDevice_post():
     slaves = request.form.getlist("register[][slave]")
     metric_names = request.form.getlist("register[][metric_name]")
     metric_units = request.form.getlist("register[][metric_unit]")
+    groupings = request.form.getlist("register[][grouping]")
 
     register_list = [
         {
@@ -71,9 +72,10 @@ def addDevice_post():
          "read_count": read_count,
          "slave": slave,
          "metric_name": metric_name,
-         "metric_unit": metric_unit
+         "metric_unit": metric_unit,
+         "grouping": grouping
          }
-        for register, read_count, slave, metric_name, metric_unit in zip(registers,read_counts, slaves, metric_names, metric_units)
+        for register, read_count, slave, metric_name, metric_unit, grouping in zip(registers,read_counts, slaves, metric_names, metric_units, groupings)
         
     ]
     # Create record for insertion to mongoDB
