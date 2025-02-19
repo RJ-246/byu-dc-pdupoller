@@ -82,7 +82,8 @@
 
       <div id="registers">
         {% for register in context.device_registers %}
-        <div class="box">
+        <hr />
+        <div class="box has-background-grey">
           <div class="field">
             <label class="label">Register</label>
             <div class="control">
@@ -183,7 +184,8 @@
     registersDiv.insertAdjacentHTML(
       "beforeend",
       `
-      <div class="box">
+      <hr />
+      <div class="box has-background-grey">
         <div class="field">
         <label class="label">Register</label>
         <div class="control">
